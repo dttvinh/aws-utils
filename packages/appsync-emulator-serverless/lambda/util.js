@@ -62,7 +62,7 @@ function installStdIOHandlers(runtime, proc, payload) {
           // from sls when there is an exception, but it is. The error output is not sent via
           // STDERR, so it doesn't otherwise get picked up. JSON parse will fail here,
           // then the error ends up in the catch block.
-          sendOutput(JSON.parse(results));
+          sendOutput(JSON.parse(allResults));
         }
       } catch (err) {
         // Serverless exited cleanly, but the output was not JSON, so parsing
@@ -71,8 +71,8 @@ function installStdIOHandlers(runtime, proc, payload) {
           log.error('Lambda invocation returned an error', errorResult);
           sendErr(errorResult);
         } else {
-          log.error('Lambda invocation returned an error', results);
-          sendErr(results);
+          log.error('Lambda invocation returned an error', allResults);
+          sendErr(allResults);
         }
       }
     } else {
