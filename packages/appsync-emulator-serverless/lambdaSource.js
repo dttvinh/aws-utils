@@ -41,16 +41,17 @@ const lambdaSource = async (
   );
   let child = null;
 
-  if (fnConfig.runtime && !fnConfig.runtime.includes('node')) {
+  let runtime = fnConfig.runtime || provider.runtime;
+  if (runtime && !runtime.includes('node')) {
     let extHandlerMethod = '';
     let runner = null;
-    if (fnConfig.runtime.indexOf('python') >= 0) {
+    if (runtime.indexOf('python') >= 0) {
       extHandlerMethod = fn;
       runner = PythonRunner;
-    } else if (fnConfig.runtime.indexOf('ruby') >= 0) {
+    } else if (runtime.indexOf('ruby') >= 0) {
       extHandlerMethod = fn;
       runner = RubyRunner;
-    } else if (fnConfig.runtime.indexOf('go') >= 0) {
+    } else if (runtime.indexOf('go') >= 0) {
       extHandlerMethod = fnConfig.handler.split('/').pop();
       runner = GoRunner;
     }
