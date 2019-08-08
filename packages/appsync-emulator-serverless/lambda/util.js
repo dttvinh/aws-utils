@@ -82,12 +82,12 @@ function installStdIOHandlers(runtime, proc, payload) {
 
   proc.stderr.on('data', data => {
     errorResult = data.toString();
-    try {
-      const parsedData = JSON.parse(data.toString());
-      sendErr(parsedData);
-    } catch (err) {
-      log.error('Could not parse JSON from lambda invocation', errorResult);
-    }
+//     try {
+//       const parsedData = JSON.parse(data.toString());
+//       sendErr(parsedData);
+//     } catch (err) {
+//       log.error('Could not parse JSON from lambda invocation', errorResult);
+//     }
   });
 }
 
