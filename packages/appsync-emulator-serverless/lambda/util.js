@@ -62,7 +62,11 @@ function installStdIOHandlers(runtime, proc, payload) {
           // from sls when there is an exception, but it is. The error output is not sent via
           // STDERR, so it doesn't otherwise get picked up. JSON parse will fail here,
           // then the error ends up in the catch block.
-          sendOutput(JSON.parse(allResults));
+
+          // Process pipe has a length limit of 65536: https://unix.stackexchange.com/questions/11946/how-big-is-the-pipe-buffer
+          // What that means is that if the output length is longer than 65536 characters, there will be an "extra" new line after the 65536-th character
+          // As new lines don't affect JSON string, we remove all of them before trying to parse to be on safe side
+          sendOutput(JSON.parse(allResults.replace(/\n/g, '')));
         }
       } catch (err) {
         // Serverless exited cleanly, but the output was not JSON, so parsing
