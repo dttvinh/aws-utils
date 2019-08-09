@@ -66,7 +66,15 @@ function installStdIOHandlers(runtime, proc, payload) {
           // Process pipe has a length limit of 65536: https://unix.stackexchange.com/questions/11946/how-big-is-the-pipe-buffer
           // What that means is that if the output length is longer than 65536 characters, there will be an "extra" new line after the 65536-th character
           // As new lines don't affect JSON string, we remove all of them before trying to parse to be on safe side
-          sendOutput(JSON.parse(allResults.replace(/\n/g, '')));
+          let lines = allResults.split('\n');
+          let idx = 0;
+          let jsonResults = '';
+          for(; idx < lines.length; idx++) {
+            // Trying to guess when it's the start of our function output, and not a random logging statement
+            if (lines[idx].startsWith('{')) break;
+          }
+          jsonResults = lines.slice(idx).join('');
+          sendOutput(JSON.parse(jsonResults));
         }
       } catch (err) {
         // Serverless exited cleanly, but the output was not JSON, so parsing
