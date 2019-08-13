@@ -69,10 +69,13 @@ function installStdIOHandlers(runtime, proc, payload) {
           let lines = allResults.split('\n');
           let idx = 0;
           let jsonResults = '';
-          for(; idx < lines.length; idx++) {
+          for(idx = lines.length - 1; idx >= 0; idx--) {
             // Trying to guess when it's the start of our function output, and not a random logging statement
+            // Searching backwards so we don't erroneously trigger if someone logs a dictionary (python) in the function
             if (lines[idx].startsWith('{')) break;
           }
+          let lambdaDebugLog = lines.slice(0, idx).join('\n')
+          log.info('Lambda function logs:\n' + lambdaDebugLog)
           jsonResults = lines.slice(idx).join('');
           sendOutput(JSON.parse(jsonResults));
         }
