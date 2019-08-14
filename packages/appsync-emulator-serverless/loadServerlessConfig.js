@@ -88,10 +88,11 @@ const loadServerlessConfig = async (cwd = process.cwd()) => {
   }
   const serverless = new ConfigServerless();
   await serverless.getConfig(cwd);
-  const { service: config, options } = serverless;
+  const { service: config, processedInput } = serverless;
 
   const { custom = {} } = config;
   const { appSync = {} } = custom;
+  const { options } = processedInput;
 
   util.flatteningMappingTemplatesAndDataSources(appSync);
 
