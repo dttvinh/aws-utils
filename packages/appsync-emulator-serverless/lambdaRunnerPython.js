@@ -7,12 +7,17 @@ const {
 
 process.once(
   'message',
-  async ({ serverlessDirectory, handlerMethod, payload }) => {
+  async ({ serverlessDirectory, handlerMethod, cliOptions, payload }) => {
     try {
       log.info('load', handlerMethod);
 
       const { spawn } = require('child_process');
-      const args = ['invoke', 'local', '-f', handlerMethod];
+      let args;
+      if (cliOptions.stage) {
+        args = ['invoke', 'local', '-f', handlerMethod, '-s', cliOptions.stage];
+      } else {
+        args = ['invoke', 'local', '-f', handlerMethod];
+      }
 
       const sls = spawn('sls', args, {
         env: process.env,

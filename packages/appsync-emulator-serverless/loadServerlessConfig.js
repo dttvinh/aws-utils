@@ -88,7 +88,7 @@ const loadServerlessConfig = async (cwd = process.cwd()) => {
   }
   const serverless = new ConfigServerless();
   await serverless.getConfig(cwd);
-  const { service: config } = serverless;
+  const { service: config, options } = serverless;
 
   const { custom = {} } = config;
   const { appSync = {} } = custom;
@@ -105,6 +105,7 @@ const loadServerlessConfig = async (cwd = process.cwd()) => {
         },
       },
       resources: normalizeResources(config),
+      cliOptions: options,
     },
     directory: cwd,
   };

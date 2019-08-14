@@ -54,9 +54,11 @@ const createSchema = async ({
   let serverlessDirectory;
   if (typeof serverless === 'object') {
     serverlessConfig = serverless.service;
+    const serverlessOptions = serverless.options;
     const appSyncConfig = getAppSyncConfig(serverlessConfig);
     flatteningMappingTemplatesAndDataSources(appSyncConfig);
     serverlessConfig.appSyncConfig = appSyncConfig;
+    serverlessConfig.cliOptions = serverlessOptions;
     serverlessDirectory = serverless.config.servicePath;
   } else {
     serverlessDirectory =

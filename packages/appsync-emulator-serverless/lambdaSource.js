@@ -11,7 +11,7 @@ const lambdaSource = async (
   {
     dynamodbEndpoint,
     dynamodbTables,
-    serverlessConfig: { functions = {}, custom = {}, provider = {} },
+    serverlessConfig: { functions = {}, custom = {}, provider = {}, cliOptions = {} },
     serverlessDirectory,
   },
   fn,
@@ -70,6 +70,7 @@ const lambdaSource = async (
     child.send({
       serverlessDirectory,
       handlerMethod: extHandlerMethod,
+      cliOptions,
       payload,
     });
   } else {
