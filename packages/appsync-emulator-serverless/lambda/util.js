@@ -53,6 +53,7 @@ function installStdIOHandlers(runtime, proc, payload) {
       sendErr(errorResult);
     } else if (allResults.indexOf('Traceback') >= 0) {
       sendErr(allResults);
+      log.info("Lambda function failed with traceback:\n", allResults);
     } else if (code === 0) {
       try {
         if (runtime.includes('go')) {
@@ -67,17 +68,27 @@ function installStdIOHandlers(runtime, proc, payload) {
           // What that means is that if the output length is longer than 65536 characters, there will be an "extra" new line after the 65536-th character
           // As new lines don't affect JSON string, we remove all of them before trying to parse to be on safe side
           let lines = allResults.split('\n');
-          let idx = 0;
+          let start_idx = 0;
+          let end_idx = 0;
           let jsonResults = '';
           for(idx = lines.length - 1; idx >= 0; idx--) {
             // Trying to guess when it's the start of our function output, and not a random logging statement
             // Searching backwards so we don't erroneously trigger if someone logs a dictionary (python) in the function
-            if (lines[idx].startsWith('{')) break;
+            if (lines[idx].startsWith('{')) { start_idx = idx; break; }
+            if (lines[idx].startsWith('}')) { end_idx = idx; }
           }
-          let lambdaDebugLog = lines.slice(0, idx).join('\n')
-          log.info('Lambda function logs:\n' + lambdaDebugLog)
-          jsonResults = lines.slice(idx).join('');
-          sendOutput(JSON.parse(jsonResults));
+
+          if ( start_idx >= end_idx ) {
+            log.info('Failed to find output JSON in lambda output: \n', allResults)
+            sendErr("Failed to parse out lambda function return")
+          } else {
+            let jsonResults = lines.slice(start_idx, end_idx + 1);
+            log.info('Lambda function logs:\n'
+              + lines.slice(0, start_idx).join('\n')
+              + "\n\x1b[32m" + lines.slice(start_idx, end_idx + 1).join('\n') + "\x1b[0m\n"
+              + lines.slice(end_idx + 1).join('\n'));
+            sendOutput(JSON.parse(jsonResults.join('')));
+          }
         }
       } catch (err) {
         // Serverless exited cleanly, but the output was not JSON, so parsing
