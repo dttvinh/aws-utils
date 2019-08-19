@@ -1,4 +1,4 @@
-const log = require('logdown')('appsync-emulator:lambdaRunner');
+const log = require('logdown')('appsync-emulator:lambdaRunner', { markdown: false });
 
 const parseErrorStack = error =>
   error.stack
